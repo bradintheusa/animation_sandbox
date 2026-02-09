@@ -1,4 +1,3 @@
-import 'package:animation_sandbox/simple_sample.dart';
 import 'package:animation_sandbox/staggered.dart';
 import 'package:flutter/material.dart';
 

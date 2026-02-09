@@ -9,54 +9,89 @@ class Staggered extends StatefulWidget {
 
 class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
   late AnimationController controller;
-  late Animation<double> opacity;
-  late Animation<double> opacity2;
-  late Animation<double> opacity3;
-  late Animation<double> _opacityAnimation;
+  late Animation<double> sendingText;
+  late Animation<double> sentText;
+  late Animation<double> notifyText;
+
+  static double fadeWeight = 4; // 6 of theses
+  final double pausesAmount = 4 * fadeWeight; // 2 of these
+
+  TweenSequenceItem<double> _pause(double weight, double opacity) {
+    return TweenSequenceItem(
+      tween: ConstantTween<double>(opacity),
+      weight: weight,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
 
     controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 5000),
       vsync: this,
     );
 
-    _opacityAnimation = TweenSequence<double>([
+    notifyText = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(
           begin: 1.0,
           end: 0,
         ).chain(CurveTween(curve: Curves.easeIn)),
-        weight: 20.0, // 20% of the time spent fading in
+        weight: fadeWeight,
       ),
-      TweenSequenceItem(
-        tween: ConstantTween<double>(0),
-        weight: 60.0, // 60% of the time staying visible
-      ),
+      _pause(pausesAmount * 2 + (fadeWeight * 4), 0),
       TweenSequenceItem(
         tween: Tween<double>(
           begin: 0,
           end: 1.0,
         ).chain(CurveTween(curve: Curves.easeOut)),
-        weight: 20.0, // 20% of the time fading out
+        weight: fadeWeight,
       ),
     ]).animate(controller);
 
-    opacity = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.0, 0.100, curve: Curves.ease),
+    sendingText = TweenSequence<double>([
+      _pause(fadeWeight, 0),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 0,
+          end: 1,
+        ).chain(CurveTween(curve: Curves.easeIn)),
+        weight: fadeWeight,
       ),
-    );
+      _pause(pausesAmount, 1),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 1,
+          end: 0,
+        ).chain(CurveTween(curve: Curves.easeOut)),
+        weight: fadeWeight,
+      ),
+      _pause(pausesAmount + (fadeWeight * 4), 0),
+    ]).animate(controller);
 
-    opacity2 = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(
-        parent: controller,
-        curve: const Interval(0.45, 0.55, curve: Curves.ease),
+    sentText = TweenSequence<double>([
+      _pause(fadeWeight * 2, 0),
+      _pause(pausesAmount, 0),
+      _pause(fadeWeight, 0),
+
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 0,
+          end: 1,
+        ).chain(CurveTween(curve: Curves.easeIn)),
+        weight: fadeWeight,
       ),
-    );
+      _pause(pausesAmount, 1),
+      TweenSequenceItem(
+        tween: Tween<double>(
+          begin: 1,
+          end: 0,
+        ).chain(CurveTween(curve: Curves.easeOut)),
+        weight: fadeWeight,
+      ),
+      _pause(fadeWeight, 0),
+    ]).animate(controller);
   }
 
   @override
@@ -70,19 +105,28 @@ class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
             child: const Text('Start Animation'),
           ),
           const SizedBox(height: 20),
-          Opacity(
-            opacity: _opacityAnimation.value,
-            child: const Text("Beginning of animation"),
-          ),
-          const Text("Sending"),
-          Opacity(opacity: opacity2.value, child: const Text("Sending")),
 
-          const Text("Sent"),
-          // Container(
-          //   width: 200,
-          //   height: controller.value * 200,
-          //   color: Colors.blue,
-          // ),
+          Container(
+            width: 200,
+            height: 120,
+            color: Colors.white60,
+            child: Stack(
+              children: [
+                // if (notifyText.value != 1)
+                Opacity(
+                  opacity: notifyText.value,
+                  child: const Text("Notify 3 people"),
+                ),
+                // if (sendingText.value != 1)
+                Opacity(
+                  opacity: sendingText.value,
+                  child: const Text("Sending"),
+                ),
+                // if (sentText.value != 1)
+                Opacity(opacity: sentText.value, child: const Text("Sent")),
+              ],
+            ),
+          ),
         ],
       ),
     );
