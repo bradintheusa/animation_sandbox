@@ -106,26 +106,18 @@ class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 20),
 
-          Container(
-            width: 200,
-            height: 120,
-            color: Colors.white60,
-            child: Stack(
-              children: [
-                // if (notifyText.value != 1)
-                Opacity(
-                  opacity: notifyText.value,
-                  child: const Text("Notify 3 people"),
-                ),
-                // if (sendingText.value != 1)
-                Opacity(
-                  opacity: sendingText.value,
-                  child: const Text("Sending"),
-                ),
-                // if (sentText.value != 1)
-                Opacity(opacity: sentText.value, child: const Text("Sent")),
-              ],
-            ),
+          Stack(
+            children: [
+              // if (notifyText.value != 1)
+              Opacity(
+                opacity: notifyText.value,
+                child: const Text("Notify 3 people"),
+              ),
+              // if (sendingText.value != 1)
+              Opacity(opacity: sendingText.value, child: const Text("Sending")),
+              // if (sentText.value != 1)
+              Opacity(opacity: sentText.value, child: const Text("Sent")),
+            ],
           ),
         ],
       ),
