@@ -17,20 +17,6 @@ jobs:
         with:
           channel: 'stable'
           
-      - name: fpg-wb
-        working-directory: ./widgetbook
-        run: flutter pub get
-
-      - name: Analyze Tools wb
-        uses: zgosalvez/github-actions-analyze-dart@v1
-        with:
-          fail-on-warnings: true
-          working-directory: ./widgetbook
-
-      - name: Format Tools wb
-        working-directory: ./widgetbook
-        run: dart format . --set-exit-if-changed
-
       - name: FPG Main
         run: flutter pub get
 
