@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class Staggered extends StatefulWidget {
-  const Staggered({Key? key}) : super(key: key);
+  final AnimationController controller;
+  const Staggered({Key? key, required this.controller}) : super(key: key);
 
   @override
   StaggeredState createState() => StaggeredState();
 }
 
-class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
-  late AnimationController controller;
+class StaggeredState extends State<Staggered>
+    with SingleTickerProviderStateMixin {
   late Animation<double> sendingText;
   late Animation<double> sentText;
   late Animation<double> notifyText;
@@ -27,11 +28,6 @@ class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    controller = AnimationController(
-      duration: const Duration(milliseconds: 5000),
-      vsync: this,
-    );
-
     notifyText = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(
@@ -48,7 +44,7 @@ class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
         ).chain(CurveTween(curve: Curves.easeOut)),
         weight: fadeWeight,
       ),
-    ]).animate(controller);
+    ]).animate(widget.controller);
 
     sendingText = TweenSequence<double>([
       _pause(fadeWeight, 0),
@@ -68,7 +64,7 @@ class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
         weight: fadeWeight,
       ),
       _pause(pausesAmount + (fadeWeight * 4), 0),
-    ]).animate(controller);
+    ]).animate(widget.controller);
 
     sentText = TweenSequence<double>([
       _pause(fadeWeight * 2, 0),
@@ -91,19 +87,15 @@ class StaggeredState extends State<Staggered> with TickerProviderStateMixin {
         weight: fadeWeight,
       ),
       _pause(fadeWeight, 0),
-    ]).animate(controller);
+    ]).animate(widget.controller);
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: controller,
+      animation: widget.controller,
       builder: (context, child) => Column(
         children: [
-          ElevatedButton(
-            onPressed: () => controller.forward(from: 0),
-            child: const Text('Start Animation'),
-          ),
           const SizedBox(height: 20),
 
           Stack(
